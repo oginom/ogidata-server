@@ -1,7 +1,5 @@
 <?PHP
 
-require_once("../dbconfig.php");
-
 function numcheck(&$val,$max){
   if(empty($val) || !is_numeric($val)){
     $val = 0;
@@ -75,8 +73,8 @@ function formatValue($raw, $format) {
   }
 }
 
-function getConnection() {
-  $pdo = new PDO("mysql:host=".DB_HOST."; dbname=".DB_NAME."; charset=utf8", DB_USER, DB_PASSWORD);
+function getConnection($host, $database, $user, $password) {
+  $pdo = new PDO("mysql:host=".$host."; dbname=".$database."; charset=utf8", $user, $password);
   return $pdo;
 }
 function execute($conn, $sql, $param=array()) {

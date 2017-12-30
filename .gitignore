@@ -1,0 +1,3 @@
+
+/api/tableinfo/*
+!/api/tableinfo/.gitkeep

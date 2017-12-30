@@ -1,7 +1,7 @@
 <?PHP
 
-require_once("util.php");
-require_once("OgiData.php");
+require_once(__DIR__."/util.php");
+require_once(__DIR__."/OgiData.php");
 
 $title = $_POST["title"];
 if (gettype($title) != "string") {
@@ -82,7 +82,7 @@ createTable($table_id, $cols_info);
 // if createTable failed
 // unregisterTitle
 
-$tableinfo_filename = "tableinfo/table".$table_id.".json";
+$tableinfo_filename = __DIR__."/../tableinfo/table".$table_id.".json";
 
 $tableinfo = array();
 $tableinfo["title"] = $title;

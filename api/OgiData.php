@@ -1,6 +1,7 @@
 <?PHP
 
-require_once("util.php");
+require_once(__DIR__."/util.php");
+require_once(__DIR__."/../dbconfig.php");
 
 $datatypes = array(
   "INT",
@@ -17,7 +18,7 @@ $unittypes = array(
 
 function registerTitle($title) {
   try {
-    $conn = getConnection();
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     $sql = "INSERT INTO table_title (title) VALUES (:title)";
     $param = array(":title" => $title);
     $stmt = execute($conn, $sql, $param);
@@ -38,7 +39,7 @@ function registerTitle($title) {
 
 function getTableID($title) {
   try {
-    $conn = getConnection();
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     $sql = "SELECT table_id FROM table_title WHERE title = ";
     $sql .= $conn->quote($title);
     $stmt = execute($conn, $sql);
@@ -64,7 +65,7 @@ function getTableID($title) {
 function createTable($table_id, $cols_info) {
   $tablename = "table".$table_id;
   try {
-    $conn = getConnection();
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     //$sql = "CREATE TABLE :tablename (";
     //$param = array( ":tablename" => $tablename );
     $sql = "CREATE TABLE ";
@@ -103,7 +104,7 @@ function createTable($table_id, $cols_info) {
 function getTables() {
   $tables = array();
   try {
-    $conn = getConnection();
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     //$sql = "SHOW TABLES";
     $sql = "SELECT title, table_id FROM table_title";
     $param = array();
@@ -124,7 +125,7 @@ function getTables() {
 function insertData($table_id, $add_data) {
   $tablename = "table".$table_id;
   try {
-    $conn = getConnection();
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     $sql = "INSERT INTO ";
     //$sql .= $conn->quote($tablename);
     $sql .= $tablename;
@@ -161,7 +162,7 @@ function getData($table_id) {
   $tablename = "table".$table_id;
   $data = array();
   try {
-    $conn = getConnection();
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     $sql = "SELECT * FROM ";
     $sql .= $tablename;
     $param = array();

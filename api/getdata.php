@@ -1,7 +1,7 @@
 <?PHP
 
-require_once("util.php");
-require_once("OgiData.php");
+require_once(__DIR__."/util.php");
+require_once(__DIR__."/OgiData.php");
 
 $title = $_GET["title"];
 if (gettype($title) != "string") {
@@ -13,7 +13,7 @@ if ($table_id < 0) {
   returnError("table_id error");
 }
 
-$tableinfo_filename = "tableinfo/table".$table_id.".json";
+$tableinfo_filename = __DIR__."/../tableinfo/table".$table_id.".json";
 
 $tableinfo = file_get_contents($tableinfo_filename);
 if ($tableinfo === false) {

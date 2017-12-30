@@ -1,7 +1,7 @@
 <?PHP
 
-require_once("util.php");
-require_once("OgiData.php");
+require_once(__DIR__."/util.php");
+require_once(__DIR__."/OgiData.php");
 
 $tables = getTables();
 
