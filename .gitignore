@@ -1,3 +1,5 @@
 
-/api/tableinfo/*
-!/api/tableinfo/.gitkeep
+/tableinfo/*
+!/tableinfo/.gitkeep
+/media/img/*
+!/media/img/.gitkeep

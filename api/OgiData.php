@@ -180,4 +180,51 @@ function getData($table_id) {
   return $data;
 }
 
+function getNextImageID() {
+  try {
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $sql = "SELECT COALESCE(MAX(img_id),0) FROM img_info";
+    $stmt = execute($conn, $sql);
+    $dberr = $stmt->errorInfo();
+    if ($dberr[0] != "00000") {
+      return -1;
+    }
+    while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+      return (intval($row[0]) + 1);
+    }
+  }catch(PDOException $e){
+    return -1;
+  }
+  return -1;
+}
+
+function setImageID($img_id, $img_filename, $mime_type, $img_width, $img_height) {
+  try {
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $sql = "INSERT INTO img_info ";
+    $sql .= "(img_id,img_filename,mime_type,img_width,img_height) ";
+    $sql .= "VALUES ( ";
+    $sql .= ":img_id , ";
+    $sql .= ":img_filename , ";
+    $sql .= ":mime_type , ";
+    $sql .= ":img_width , ";
+    $sql .= ":img_height )";
+    $param = array(
+      ":img_id" => $img_id,
+      ":img_filename" => $img_filename,
+      ":mime_type" => $mime_type,
+      ":img_width" => $img_width,
+      ":img_height" => $img_height,
+    );
+    $stmt = execute($conn,$sql,$param);
+    $dberr = $stmt->errorInfo();
+    if ($dberr[0] != "00000") {
+      return false;
+    }
+  }catch(PDOException $e){
+    return false;
+  }
+  return true;
+}
+
 ?>
