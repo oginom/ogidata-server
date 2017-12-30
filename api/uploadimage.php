@@ -36,10 +36,19 @@ $img_height = $image_info[1];
 $savefilename = __DIR__."/../media/img/".$img_filename;
 
 if (setImageID($img_id, $img_filename, $mime_type, $img_width, $img_height)) {
-  move_uploaded_file($_FILES['file']['tmp_name'], $savefilename);
-  returnJSON(array("result" => "success"));
+  if (move_uploaded_file($_FILES['file']['tmp_name'], $savefilename)) {
+    $ret = array(
+      "result" => "success",
+      "img_id" => $img_id;
+    );
+    returnJSON($ret);
+  } else {
+    //TODO
+    //removeImageID from DB
+    returnError("image upload failed");
+  }
 } else {
-  returnError("image DB update error");
+  returnError("image DB update failed");
 }
 
 ?>
