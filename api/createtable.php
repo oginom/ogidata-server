@@ -76,11 +76,11 @@ if ($table_id < 0) {
   returnError("table_id error");
 }
 
-createTable($table_id, $cols_info);
+$success = createTable($table_id, $cols_info);
 
-// TODO
-// if createTable failed
-// unregisterTitle
+if (!$success) {
+ unregisterTitle($title);
+}
 
 $tableinfo_filename = __DIR__."/../tableinfo/table".$table_id.".json";
 
