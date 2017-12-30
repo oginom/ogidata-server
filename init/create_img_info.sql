@@ -4,5 +4,6 @@ CREATE TABLE img_info (
   mime_type VARCHAR(255) NOT NULL,
   img_filename VARCHAR(255) UNIQUE NOT NULL,
   img_width INT,
-  img_height INT
+  img_height INT,
+  is_removed BOOLEAN NOT NULL DEFAULT FALSE
 );

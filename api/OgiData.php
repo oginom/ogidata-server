@@ -78,6 +78,8 @@ function createTable($table_id, $cols_info) {
       //TODO iikanjini ni
       if ($type_db == "STRING") {
         $type_db = "VARCHAR(255)";
+      } else if ($type_db == "IMG") {
+        $type_db = "INT";
       }
       //$sql .= " :nm".$i." ".$type_db.",";
       $sql .= $col_info["name_db"]." ".$type_db.",";
@@ -223,6 +225,36 @@ function setImageID($img_id, $img_filename, $mime_type, $img_width, $img_height)
     }
   }catch(PDOException $e){
     return false;
+  }
+  return true;
+}
+
+function removeImage($img_id) {
+  try {
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $sql = "SELECT img_filename, is_removed FROM img_info WHERE img_id = :img_id";
+    $param = array(":img_id" => $img_id);
+    $stmt = execute($conn,$sql,$param);
+    $row = $stmt->fetchAll(PDO::FETCH_NUM);
+    if (count($row) == 1) {
+      $img_filename = $row[0][0];
+      $is_removed = $row[0][1];
+    } else {
+      returnError("no match image ID in DB");
+    }
+    if (intval($is_removed)) {
+      returnError("already removed");
+    }
+    $sql = "UPDATE img_info SET is_removed = TRUE WHERE img_id = :img_id";
+    $stmt = execute($conn,$sql,$param);
+    $dberr = $stmt->errorInfo();
+    if ($dberr[0] != "00000") {
+      returnError("remove image info failed");
+    }
+    $removefilename = __DIR__."/../media/img/".$img_filename;
+    unlink($removefilename);
+  }catch(PDOException $e){
+    returnError($e->getMessage());
   }
   return true;
 }

@@ -39,7 +39,7 @@ if (setImageID($img_id, $img_filename, $mime_type, $img_width, $img_height)) {
   if (move_uploaded_file($_FILES['file']['tmp_name'], $savefilename)) {
     $ret = array(
       "result" => "success",
-      "img_id" => $img_id;
+      "img_id" => $img_id
     );
     returnJSON($ret);
   } else {
