@@ -88,6 +88,7 @@ function createTable($table_id, $cols_info) {
     $sql .= $tablename;
     $sql .= " (";
     $sql .= "created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,";
+    $sql .= "data_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,";
     $name_db = array();
     foreach ($cols_info as $i => $col_info) {
       $type_db = $col_info["type"];
