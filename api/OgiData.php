@@ -121,6 +121,24 @@ function createTable($table_id, $cols_info) {
   return true;
 }
 
+function dropTable($table_id) {
+  $tablename = "table".$table_id;
+  try {
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $sql = "DROP TABLE ".$tablename;
+    $stmt = execute($conn,$sql);
+    $dberr = $stmt->errorInfo();
+    if ($dberr[0] != "00000") {
+      print_r($stmt->errorInfo());
+      //returnError("drop table error");
+      return false;
+    }
+  }catch(PDOException $e){
+    returnError($e->getMessage());
+  }
+  return true;
+}
+
 function getTables() {
   $tables = array();
   try {
@@ -131,7 +149,7 @@ function getTables() {
     $stmt = execute($conn,$sql,$param);
     $dberr = $stmt->errorInfo();
     if ($dberr[0] != "00000") {
-      returnError("create table error");
+      returnError("get tables error");
     }
     while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
       $tables[$row[0]] = $row[1];
