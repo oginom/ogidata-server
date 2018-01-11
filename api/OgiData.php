@@ -196,6 +196,33 @@ function insertData($table_id, $add_data) {
   }
 }
 
+function deleteData($table_id, $data_id) {
+  $tablename = "table".$table_id;
+  try {
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $sql = "DELETE FROM ";
+    $sql .= $tablename;
+    $sql .= " WHERE data_id = :data_id";
+    $param = array(
+      ":data_id" => $data_id
+    );
+    $stmt = execute($conn, $sql, $param);
+    $dberr = $stmt->errorInfo();
+    if ($dberr[0] != "00000") {
+      //print_r($stmt->errorInfo());
+      returnError("delete data failed");
+    }
+    $delCount = $stmt->rowCount();
+    if ($delCount < 1) {
+      returnError("data_id not match");
+    } else if ($delCount > 1) {
+      returnError("same data_id count was ".$delCount);
+    }
+  }catch(PDOException $e){
+    returnError($e->getMessage());
+  }
+}
+
 function getData($table_id) {
   $tablename = "table".$table_id;
   $data = array();
