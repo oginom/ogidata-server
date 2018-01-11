@@ -9,6 +9,7 @@ $datatypes = array(
   "DECIMAL",
   "STRING",
   "DATETIME",
+  "DATE",
   "IMG"
 );
 $unittypes = array(
