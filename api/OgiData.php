@@ -8,7 +8,7 @@ $datatypes = array(
   "DOUBLE",
   "DECIMAL",
   "STRING",
-  "DATETIME",
+  "TIMESTAMP",
   "DATE",
   "IMG"
 );
@@ -88,7 +88,7 @@ function createTable($table_id, $cols_info) {
     //$sql .= $conn->quote($tablename);
     $sql .= $tablename;
     $sql .= " (";
-    $sql .= "created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,";
+    $sql .= "created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,";
     $sql .= "data_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,";
     $name_db = array();
     foreach ($cols_info as $i => $col_info) {
