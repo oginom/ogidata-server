@@ -61,7 +61,7 @@ function checkValueType($val, $type) {
       if (preg_match(
           '/^[0-9]{4}-[0-9]{1-2}-[0-9]{1-2}$/',
           $val, $m)) {
-        $m = explode("-",$mi[0]);
+        $m = explode("-",$m[0]);
         if (!checkdate(intval($m[1]), intval($m[2]), intval($m[0]))) {
           throw new Exception("DATE ".$val." doesn't exist");
         }
