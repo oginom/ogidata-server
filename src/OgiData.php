@@ -17,6 +17,55 @@ $unittypes = array(
   "YEN"
 );
 
+function checkValueType($val, $type) {
+  if (gettype($type) != "string") {
+    throw new Exception("value is not string");
+  }
+  switch ($type) {
+    case "INT":
+      if (filter_var($val, FILTER_VALIDATE_INT) === false) {
+        throw new Exception("value ".$val." doesn't fit INT");
+      }
+      break;
+    case "DOUBLE":
+      if (filter_var($val, FILTER_VALIDATE_FLOAT) === false) {
+        throw new Exception("value ".$val." doesn't fit DOUBLE");
+      }
+      break;
+    case "DECIMAL":
+      if (filter_var($val, FILTER_VALIDATE_FLOAT) === false) {
+        throw new Exception("value ".$val." doesn't fit DECIMAL");
+      }
+      break;
+    case "STRING":
+      break;
+    case "TIMESTAMP":
+      if (!preg_match(
+          '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/',
+          $val, $m)) {
+        throw new Exception("value ".$val." doesn't fit TIMESTAMP");
+      }
+      break;
+    case "DATE":
+      if (!preg_match(
+          '/^[0-9]{4}-[0-9]{2}-[0-9]{2}',
+          $val, $m)) {
+        throw new Exception("value ".$val." doesn't fit DATE");
+      }
+      break;
+    case "IMG":
+      if (filter_var($val, FILTER_VALIDATE_INT) === false) {
+        throw new Exception("value ".$val." doesn't fit IMG");
+      }
+      //TODO check image id
+      break;
+    default:
+      throw new Exception("type '".$type."' not found");
+      break;
+  }
+  return;
+}
+
 function registerTitle($title) {
   try {
     $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
@@ -115,7 +164,7 @@ function createTable($table_id, $cols_info) {
       //returnError("create table error");
       return false;
     }
-  }catch(PDOException $e){
+  } catch (PDOException $e) {
     returnError($e->getMessage());
   }
   return true;
@@ -133,7 +182,7 @@ function dropTable($table_id) {
       //returnError("drop table error");
       return false;
     }
-  }catch(PDOException $e){
+  } catch (PDOException $e) {
     returnError($e->getMessage());
   }
   return true;
@@ -154,7 +203,7 @@ function getTables() {
     while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
       $tables[$row[0]] = $row[1];
     }
-  }catch(PDOException $e){
+  } catch (PDOException $e) {
     returnError($e->getMessage());
   }
   return $tables;
@@ -237,7 +286,7 @@ function getData($table_id) {
     while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
       $data[] = $row;
     }
-  }catch(PDOException $e){
+  } catch (PDOException $e) {
     returnError($e->getMessage());
   }
   return $data;
@@ -255,7 +304,7 @@ function getNextImageID() {
     while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
       return (intval($row[0]) + 1);
     }
-  }catch(PDOException $e){
+  } catch (PDOException $e) {
     return -1;
   }
   return -1;
@@ -284,7 +333,7 @@ function setImageID($img_id, $img_filename, $mime_type, $img_width, $img_height)
     if ($dberr[0] != "00000") {
       return false;
     }
-  }catch(PDOException $e){
+  } catch (PDOException $e) {
     return false;
   }
   return true;
@@ -314,7 +363,7 @@ function removeImage($img_id) {
     }
     $removefilename = __DIR__."/../media/img/".$img_filename;
     unlink($removefilename);
-  }catch(PDOException $e){
+  } catch (PDOException $e) {
     returnError($e->getMessage());
   }
   return true;

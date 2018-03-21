@@ -207,16 +207,17 @@ function api_insertdata($title, $data) {
     returnError("tableinfo file format error");
   }
 
-
   $add_data = array();
   foreach ($data as $d_k => $d_v) {
     if (gettype($d_k) != "string") {
       returnError("");
     }
     $name_db = "";
+    $col_type = "";
     foreach ($tableinfo["columns"] as $i => $col_info) {
       if ($d_k == $col_info["name"]) {
         $name_db = $col_info["name_db"];
+        $col_type = $col_info["type"];
         break;
       }
     }
@@ -227,10 +228,11 @@ function api_insertdata($title, $data) {
       returnError("column ".$d_k." doubled");
     }
 
-    //TODO Type Check
-    //if (gettype($d_v) != "string") {
-    //  returnError("");
-    //}
+    try {
+      checkValueType($d_v, $col_type);
+    } catch (Exception $e) {
+      returnError($e->getMessage());
+    }
 
     $d_v = (string) $d_v;
     $add_data[$name_db] = $d_v;
@@ -251,7 +253,6 @@ function api_insertdata($title, $data) {
     "data" => $add_data
   );
   returnJSON($ret);
-
 }
 
 function api_removeimage($img_id) {
