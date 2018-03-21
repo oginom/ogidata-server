@@ -38,6 +38,8 @@ $col_format = array(
 
 function api_createtable($title, $cols) {
 
+  global $col_format;
+
   $cols_info = array();
   $col_ind = 0;
   foreach ($cols as $ind => $col) {
@@ -244,7 +246,11 @@ function api_insertdata($title, $data) {
 
   // if failed
 
-  //returnJSON($ret);
+  $ret = array(
+    "result" => "success",
+    "data" => $add_data
+  );
+  returnJSON($ret);
 
 }
 

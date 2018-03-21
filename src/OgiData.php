@@ -182,7 +182,6 @@ function insertData($table_id, $add_data) {
     $sql .= $sql_val;
     $sql .= ")";
 
-    var_dump($sql);
     $param = array();
     $stmt = execute($conn,$sql,$param);
     $dberr = $stmt->errorInfo();
@@ -190,7 +189,6 @@ function insertData($table_id, $add_data) {
       //var_dump($stmt->errorInfo());
       returnError("insert data error");
     }
-    
   } catch (PDOException $e) {
     returnError($e->getMessage());
   }

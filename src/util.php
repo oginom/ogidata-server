@@ -26,7 +26,7 @@ function formatValue($raw, $format) {
         && gettype($format["contents"]) == "array") {
       $contents = $format["contents"];
     }
-    
+
     if ($unknownkey) {
       $ret = $raw;
     } else {
