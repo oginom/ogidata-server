@@ -2,9 +2,6 @@
 
 require_once(__DIR__."/../src/functions.php");
 
-// 画像サイズ2MBまで
-define("IMG_SIZE_MAX", 2000000);
-
 if ($_FILES['file']) {
   $image_tmpname = $_FILES['file']['tmp_name'];
   $image_filesize = $_FILES['file']['size'];
@@ -12,6 +9,5 @@ if ($_FILES['file']) {
 } else {
   returnError("no available file");
 }
-
 
 ?>

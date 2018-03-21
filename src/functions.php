@@ -3,6 +3,9 @@
 require_once(__DIR__."/util.php");
 require_once(__DIR__."/OgiData.php");
 
+// 画像サイズ2MBまで
+define("IMG_SIZE_MAX", 2000000);
+
 $col_format = array(
   "type" => "dict",
   "unknownkey" => false,
