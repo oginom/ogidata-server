@@ -48,7 +48,7 @@ function checkValueType($val, $type) {
       break;
     case "DATE":
       if (!preg_match(
-          '/^[0-9]{4}-[0-9]{2}-[0-9]{2}',
+          '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',
           $val, $m)) {
         throw new Exception("value ".$val." doesn't fit DATE");
       }
@@ -178,7 +178,7 @@ function dropTable($table_id) {
     $stmt = execute($conn,$sql);
     $dberr = $stmt->errorInfo();
     if ($dberr[0] != "00000") {
-      print_r($stmt->errorInfo());
+      //print_r($stmt->errorInfo());
       //returnError("drop table error");
       return false;
     }
