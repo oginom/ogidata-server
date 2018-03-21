@@ -1,4 +1,6 @@
 
+/dbconfig.php
+
 /tableinfo/*
 !/tableinfo/.gitkeep
 /media/img/*

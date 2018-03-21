@@ -40,16 +40,35 @@ function checkValueType($val, $type) {
     case "STRING":
       break;
     case "TIMESTAMP":
-      if (!preg_match(
-          '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}$/',
+      if (preg_match(
+          '/^[0-9]{4}-[0-9]{1,2}-[0-9]{1,2} ([0-1]?[0-9]|2[0-3]):[0-5]?[0-9]:[0-5]?[0-9]$/',
           $val, $m)) {
+        $m = explode(" ",$m[0])[0];
+        $m = explode("-",$m);
+        if (!checkdate(intval($m[1]), intval($m[2]), intval($m[0]))) {
+          throw new Exception("TIMESTAMP ".$val." doesn't exist");
+        }
+        if (intval($m[0]) < 1970) {
+          throw new Exception("TIMESTAMP must be future than 1970-01-01 00:00:00");
+        } else if (intval($m[0]) >= 2038) {
+          throw new Exception("TIMESTAMP must be past than 2038-01-01 00:00:00");
+        }
+      } else {
         throw new Exception("value ".$val." doesn't fit TIMESTAMP");
       }
       break;
     case "DATE":
-      if (!preg_match(
-          '/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/',
+      if (preg_match(
+          '/^[0-9]{4}-[0-9]{1-2}-[0-9]{1-2}$/',
           $val, $m)) {
+        $m = explode("-",$mi[0]);
+        if (!checkdate(intval($m[1]), intval($m[2]), intval($m[0]))) {
+          throw new Exception("DATE ".$val." doesn't exist");
+        }
+        if (intval($m[0]) < 1000) {
+          throw new Exception("DATE must be older than 1000-01-01");
+        }
+      } else {
         throw new Exception("value ".$val." doesn't fit DATE");
       }
       break;
