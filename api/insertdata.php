@@ -1,7 +1,7 @@
 <?PHP
 
-require_once(__DIR__."/util.php");
-require_once(__DIR__."/OgiData.php");
+require_once(__DIR__."../src/util.php");
+require_once(__DIR__."../src/OgiData.php");
 
 $title = $_POST["title"];
 if (gettype($title) != "string") {

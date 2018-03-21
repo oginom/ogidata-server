@@ -1,7 +1,7 @@
 <?php
 
-require_once(__DIR__."/util.php");
-require_once(__DIR__."/OgiData.php");
+require_once(__DIR__."../src/util.php");
+require_once(__DIR__."../src/OgiData.php");
 
 // 画像サイズ2MBまで
 define("IMG_SIZE_MAX", 2000000);

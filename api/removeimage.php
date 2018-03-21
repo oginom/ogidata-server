@@ -1,7 +1,7 @@
 <?PHP
 
-require_once(__DIR__."/util.php");
-require_once(__DIR__."/OgiData.php");
+require_once(__DIR__."../src/util.php");
+require_once(__DIR__."../src/OgiData.php");
 
 $img_id = $_POST["img_id"];
 if (!is_numeric($img_id)) {
