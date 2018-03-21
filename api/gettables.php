@@ -1,10 +1,7 @@
 <?PHP
 
-require_once(__DIR__."../src/util.php");
-require_once(__DIR__."../src/OgiData.php");
+require_once(__DIR__."/../src/functions.php");
 
-$tables = getTables();
-
-returnJSON($tables);
+api_gettables();
 
 ?>

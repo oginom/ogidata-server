@@ -1,7 +1,6 @@
 <?PHP
 
-require_once(__DIR__."../src/util.php");
-require_once(__DIR__."../src/OgiData.php");
+require_once(__DIR__."/../src/functions.php");
 
 $img_id = $_POST["img_id"];
 if (!is_numeric($img_id)) {
@@ -9,8 +8,6 @@ if (!is_numeric($img_id)) {
 }
 $img_id = intval($img_id);
 
-$result = removeImage($img_id);
-
-returnJSON($result);
+api_removeimage($img_id);
 
 ?>
