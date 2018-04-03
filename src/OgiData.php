@@ -289,18 +289,21 @@ function deleteData($table_id, $data_id) {
   }
 }
 
-function getData($table_id) {
+function getData($table_id, $start_index, $limit, $asc) {
   $tablename = "table".$table_id;
   $data = array();
   try {
     $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     $sql = "SELECT * FROM ";
     $sql .= $tablename;
+    $sql .= " ORDER BY data_id";
+    $sql .= $asc ? " ASC" : " DESC";
+    $sql .= " LIMIT ".$start_index.", ".$limit;
     $param = array();
     $stmt = execute($conn,$sql,$param);
     $dberr = $stmt->errorInfo();
     if ($dberr[0] != "00000") {
-      returnError("create table error");
+      returnError("get data from DB error");
     }
     while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
       $data[] = $row;

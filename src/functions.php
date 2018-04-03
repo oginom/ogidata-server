@@ -124,7 +124,25 @@ function api_droptable($title) {
   returnJSON($success);
 }
 
-function api_getdata($title) {
+function api_getdata($title, $start_index, $limit, $asc) {
+
+  if (gettype($start_index) != "integer") {
+    $start_index = 0;
+  }
+  if (gettype($limit) != "integer") {
+    $limit = 100;
+  }
+  if (gettype($asc) != "boolean") {
+    $asc = true;
+  }
+  if ($start_index < 0) {
+    returnError("start_index cannot smaller than zero");
+  }
+  if ($limit < 0) {
+    returnError("limit cannot smaller than zero");
+  } else if ($limit > 500) {
+    returnError("limit cannot bigger than 500");
+  }
 
   $table_id = getTableId($title);
   if ($table_id < 0) {
@@ -142,7 +160,7 @@ function api_getdata($title) {
     returnError("tableinfo file format error");
   }
 
-  $data = getData($table_id);
+  $data = getData($table_id, $start_index, $limit, $asc);
 
   returnJSON($data);
 
