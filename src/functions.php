@@ -156,7 +156,7 @@ function api_getdata($title, $start_index, $limit, $asc) {
     returnError("tableinfo file not found");
   }
   $tableinfo = json_decode($tableinfo, true);
-  if ($tableinfo === error) {
+  if ($tableinfo === NULL) {
     returnError("tableinfo file format error");
   }
 
@@ -166,6 +166,71 @@ function api_getdata($title, $start_index, $limit, $asc) {
 
 //if failed
 
+}
+
+function api_getchoice($title, $columns, $limit) {
+
+  if (gettype($limit) != "integer") {
+    $limit = 10;
+  }
+  if ($limit < 0) {
+    returnError("limit cannot smaller than zero");
+  } else if ($limit > 500) {
+    returnError("limit cannot bigger than 500");
+  }
+
+  $table_id = getTableId($title);
+  if ($table_id < 0) {
+    returnError("table_id error");
+  }
+
+  $getall = false;
+  if (gettype($columns) != "array" || count($columns) == 0) {
+    $getall = true;
+  }
+
+  $tableinfo_filename = __DIR__."/../tableinfo/table".$table_id.".json";
+
+  $tableinfo = file_get_contents($tableinfo_filename);
+  if ($tableinfo === false) {
+    returnError("tableinfo file not found");
+  }
+  $tableinfo = json_decode($tableinfo, true);
+  if ($tableinfo === NULL) {
+    returnError("tableinfo file format error");
+  }
+
+  $choices = array();
+
+  try {
+    if ($getall) {
+      $columns = array();
+      foreach ($tableinfo["columns"] as $column) {
+        $columns[] = $column["name"];
+      }
+    }
+    foreach ($columns as $column) {
+      $name_db = "";
+      foreach ($tableinfo["columns"] as $col_info) {
+        if ($column == $col_info["name"]) {
+          $name_db = $col_info["name_db"];
+          break;
+        }
+      }
+      if ($name_db == "") {
+        returnError("column ".$column." not found");
+      }
+      if (array_key_exists($name_db, $choices)) {
+        returnError("column ".$d_k." doubled");
+      }
+      $choice = getChoice($table_id, $name_db, $limit);
+      $choices[$column] = $choice;
+    }
+  } catch (Exception $e) {
+    returnError("tableinfo file error");
+  }
+
+  returnJSON($choices);
 }
 
 function api_gettableid($title) {
@@ -193,7 +258,7 @@ function api_gettableinfo($title) {
   }
 
   $tableinfo = json_decode($tableinfo, true);
-  if ($tableinfo === error) {
+  if ($tableinfo === NULL) {
     returnError("tableinfo file format error");
   }
 

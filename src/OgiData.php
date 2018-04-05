@@ -314,6 +314,31 @@ function getData($table_id, $start_index, $limit, $asc) {
   return $data;
 }
 
+function getChoice($table_id, $name_db, $limit) {
+  $tablename = "table".$table_id;
+  $choice = array();
+  try {
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $sql = "SELECT ".$name_db.", MAX(data_id) FROM ";
+    $sql .= $tablename;
+    $sql .= " GROUP BY ".$name_db;
+    $sql .= " ORDER BY MAX(data_id) DESC";
+    $sql .= " LIMIT ".$limit;
+    $param = array();
+    $stmt = execute($conn,$sql,$param);
+    $dberr = $stmt->errorInfo();
+    if ($dberr[0] != "00000") {
+      returnError("get data from DB error");
+    }
+    while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
+      $choice[] = $row[0];
+    }
+  } catch (PDOException $e) {
+    returnError($e->getMessage());
+  }
+  return $choice;
+}
+
 function getNextImageID() {
   try {
     $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
