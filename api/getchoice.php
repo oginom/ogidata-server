@@ -2,8 +2,6 @@
 
 require_once(__DIR__."/../src/functions.php");
 
-$_GET["title"] = "WEIGHT";
-
 $title = $_GET["title"];
 if (gettype($title) == "NULL") {
   returnError("no title specified");
