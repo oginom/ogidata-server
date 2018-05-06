@@ -26,6 +26,12 @@ $col_format = array(
       )
     ),
     array(
+      "key" => "type_detail",
+      "format" => array(
+        "type" => "dict"
+      )
+    ),
+    array(
       "key" => "unit",
       "default" => "NONE",
       "format" => array(
@@ -36,9 +42,43 @@ $col_format = array(
   )
 );
 
+$img_detail_mimetypes = array(
+  "jpg",
+  "png"
+);
+
+$img_detail_format = array(
+  "type" => "dict",
+  "unknownkey" => false,
+  "contents" => array(
+    array(
+      "key" => "img_width",
+      "format" => array(
+        "type" => "int",
+        "int_min" => 1
+      )
+    ),
+    array(
+      "key" => "img_height",
+      "format" => array(
+        "type" => "int",
+        "int_min" => 1
+      )
+    ),
+    array(
+      "key" => "img_mimetype",
+      "format" => array(
+        "type" => "string",
+        "enum_list" => $img_detail_mimetypes
+      )
+    )
+  )
+);
+
 function api_createtable($title, $cols) {
 
   global $col_format;
+  global $img_detail_format;
 
   $cols_info = array();
   $col_ind = 0;
@@ -48,6 +88,17 @@ function api_createtable($title, $cols) {
     }
     try {
       $col_info = formatValue($col, $col_format);
+      if (array_key_exists("type_detail", $col_info)) {
+        if ($col_info["type"] == "IMG") {
+          $col_detail = formatValue($col_info["type_detail"],
+                                    $img_detail_format);
+          $col_info["type_detail"] = $col_detail;
+        } else {
+          //TODO: implement
+          returnError("type_detail for type ".$col_info["type"].
+                      " is not implemented");
+        }
+      }
     } catch (Exception $e) {
       returnError($e->getMessage());
     }
