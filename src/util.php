@@ -59,6 +59,22 @@ function formatValue($raw, $format) {
       }
     }
     return $ret;
+  } else if ($format["type"] == "int") {
+    if (!preg_match('/^-?[1-9][0-9]*$/', strval($raw))) {
+      throw new Exception("int format error");
+    }
+    $ret = intval($raw);
+    if (array_key_exists("int_min", $format)) {
+      if ($ret < $format["int_min"]) {
+        throw new Exception("int out of range");
+      }
+    }
+    if (array_key_exists("int_max", $format)) {
+      if ($ret < $format["int_max"]) {
+        throw new Exception("int out of range");
+      }
+    }
+    return $ret;
   } else if ($format["type"] == "string") {
     $ret = (string) $raw;
     if (array_key_exists("enum_list", $format)) {
