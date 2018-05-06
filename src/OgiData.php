@@ -8,6 +8,8 @@ $datatypes = array(
   "DOUBLE",
   "DECIMAL",
   "STRING",
+  "CATEGORY",
+  "TAGS",
   "TIMESTAMP",
   "DATE",
   "IMG"
@@ -38,6 +40,8 @@ function checkValueType($val, $type) {
       }
       break;
     case "STRING":
+    case "CATEGORY":
+    case "TAGS":
       break;
     case "TIMESTAMP":
       if (preg_match(
@@ -162,7 +166,9 @@ function createTable($table_id, $cols_info) {
     foreach ($cols_info as $i => $col_info) {
       $type_db = $col_info["type"];
       //TODO iikanjini ni
-      if ($type_db == "STRING") {
+      if ($type_db == "STRING" ||
+          $type_db == "CATEGORY" ||
+          $type_db == "TAGS") {
         $type_db = "VARCHAR(255)";
       } else if ($type_db == "IMG") {
         $type_db = "INT";
