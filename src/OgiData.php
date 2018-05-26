@@ -363,20 +363,22 @@ function getNextImageID() {
   return -1;
 }
 
-function setImageID($img_id, $img_filename, $mime_type, $img_width, $img_height) {
+function setImageID($img_id, $img_filename, $thumbnail_filename, $mime_type, $img_width, $img_height) {
   try {
     $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     $sql = "INSERT INTO img_info ";
-    $sql .= "(img_id,img_filename,mime_type,img_width,img_height) ";
+    $sql .= "(img_id,img_filename,thumbnail_filename,mime_type,img_width,img_height) ";
     $sql .= "VALUES ( ";
     $sql .= ":img_id , ";
     $sql .= ":img_filename , ";
+    $sql .= ":thumbnail_filename , ";
     $sql .= ":mime_type , ";
     $sql .= ":img_width , ";
     $sql .= ":img_height )";
     $param = array(
       ":img_id" => $img_id,
       ":img_filename" => $img_filename,
+      ":thumbnail_filename" => $thumbnail_filename,
       ":mime_type" => $mime_type,
       ":img_width" => $img_width,
       ":img_height" => $img_height,
@@ -395,13 +397,14 @@ function setImageID($img_id, $img_filename, $mime_type, $img_width, $img_height)
 function removeImage($img_id) {
   try {
     $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
-    $sql = "SELECT img_filename, is_removed FROM img_info WHERE img_id = :img_id";
+    $sql = "SELECT img_filename, thumbnail_filename, is_removed FROM img_info WHERE img_id = :img_id";
     $param = array(":img_id" => $img_id);
     $stmt = execute($conn,$sql,$param);
     $row = $stmt->fetchAll(PDO::FETCH_NUM);
     if (count($row) == 1) {
       $img_filename = $row[0][0];
-      $is_removed = $row[0][1];
+      $thumbnail_filename = $row[0][1];
+      $is_removed = $row[0][2];
     } else {
       returnError("no match image ID in DB");
     }
@@ -414,8 +417,10 @@ function removeImage($img_id) {
     if ($dberr[0] != "00000") {
       returnError("remove image info failed");
     }
-    $removefilename = __DIR__."/../media/img/".$img_filename;
-    unlink($removefilename);
+    $removefilename1 = __DIR__."/../media/img/".$img_filename;
+    $removefilename2 = __DIR__."/../media/img/".$thumbnail_filename;
+    unlink($removefilename1);
+    unlink($removefilename2);
   } catch (PDOException $e) {
     returnError($e->getMessage());
   }

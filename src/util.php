@@ -1,6 +1,47 @@
 <?PHP
 
-function numcheck(&$val,$max){
+function resizeImage($inputfile, $outputfile, $w, $h, $mime_type) {
+  // 加工前の画像の情報を取得
+  list($original_w, $original_h, $type) = getimagesize($inputfile);
+
+  // 加工前のファイルをフォーマット別に読み出す（この他にも対応可能なフォーマット有り）
+  switch ($mime_type) {
+    case "JPG":
+      $original_image = imagecreatefromjpeg($inputfile);
+      break;
+    case "PNG":
+      $original_image = imagecreatefrompng($inputfile);
+      break;
+    case "IMAGETYPE_GIF":
+      $original_image = imagecreatefromgif($inputfile);
+      break;
+    default:
+      return false;
+  }
+
+  // 新しく描画するキャンバスを作成
+  $canvas = imagecreatetruecolor($w, $h);
+  imagecopyresampled($canvas, $original_image, 0,0,0,0, $w, $h, $original_w, $original_h);
+
+  switch ($mime_type) {
+    case "JPG":
+      imagejpeg($canvas, $outputfile);
+      break;
+    case "PNG":
+      imagepng($canvas, $outputfile, 9);
+      break;
+    case "IMAGETYPE_GIF":
+      imagegif($canvas, $outputfile);
+      break;
+  }
+
+  // 読み出したファイルは消去
+  imagedestroy($original_image);
+  imagedestroy($canvas);
+  return true;
+}
+
+function numcheck(&$val,$max) {
   if(empty($val) || !is_numeric($val)){
     $val = 0;
   }else{

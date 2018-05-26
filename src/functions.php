@@ -6,6 +6,10 @@ require_once(__DIR__."/OgiData.php");
 // 画像サイズ2MBまで
 define("IMG_SIZE_MAX", 2000000);
 
+// サムネイル画像サイズ 64x64
+define("THUMBNAIL_SIZE_WIDTH", 64);
+define("THUMBNAIL_SIZE_HEIGHT", 64);
+
 $col_format = array(
   "type" => "dict",
   "unknownkey" => false,
@@ -423,13 +427,23 @@ function api_uploadimage($image_tmpname, $image_filesize) {
   $img_height = $image_info[1];
   $savefilename = __DIR__."/../media/img/".$img_filename;
 
-  if (setImageID($img_id, $img_filename, $mime_type, $img_width, $img_height)) {
+  $thumbnail_filename = "thm-".$img_id.$img_ext;
+  $thumbnail_savefilename = __DIR__."/../media/img/".$thumbnail_filename;
+
+  if (setImageID($img_id, $img_filename, $thumbnail_filename, $mime_type, $img_width, $img_height)) {
     if (move_uploaded_file($image_tmpname, $savefilename)) {
-      $ret = array(
-        "result" => "success",
-        "img_id" => $img_id
-      );
-      returnJSON($ret);
+      if (resizeImage($savefilename, $thumbnail_savefilename, THUMBNAIL_SIZE_WIDTH, THUMBNAIL_SIZE_HEIGHT, $mime_type)) {
+        $ret = array(
+          "result" => "success",
+          "img_id" => $img_id
+        );
+        returnJSON($ret);
+      } else {
+        unlink($savefilename);
+        //TODO
+        //removeImageID from DB
+        returnError("create thumbnail failed");
+      }
     } else {
       //TODO
       //removeImageID from DB
