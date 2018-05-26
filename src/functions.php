@@ -455,4 +455,11 @@ function api_uploadimage($image_tmpname, $image_filesize) {
 
 }
 
+function api_getimageinfo($img_id) {
+
+  $result = getImageInfo($img_id);
+
+  returnJSON($result);
+}
+
 ?>

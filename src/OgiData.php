@@ -427,4 +427,32 @@ function removeImage($img_id) {
   return true;
 }
 
+function getImageInfo($img_id) {
+  try {
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $sql = "SELECT img_id, mime_type, img_filename, thumbnail_filename, img_width, img_height, is_removed FROM img_info WHERE img_id = :img_id";
+    $param = array(":img_id" => $img_id);
+    $stmt = execute($conn,$sql,$param);
+    $row = $stmt->fetchAll(PDO::FETCH_NUM);
+    if (count($row) != 1) {
+      returnError("no match image ID in DB");
+    }
+    $is_removed = $row[0][6];
+    if (intval($is_removed)) {
+      returnError("already removed");
+    }
+    $ret = array(
+      "img_id" => $row[0][0],
+      "mime_type" => $row[0][1],
+      "img_filename" => $row[0][2],
+      "thumbnail_filename" => $row[0][3],
+      "img_width" => $row[0][4],
+      "img_height" => $row[0][5]
+    );
+    return $ret;
+  } catch (PDOException $e) {
+    returnError($e->getMessage());
+  }
+}
+
 ?>
