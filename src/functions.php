@@ -47,8 +47,8 @@ $col_format = array(
 );
 
 $img_detail_mimetypes = array(
-  "jpg",
-  "png"
+  "JPG",
+  "PNG"
 );
 
 $img_detail_format = array(
@@ -352,10 +352,14 @@ function api_insertdata($title, $data) {
     }
     $name_db = "";
     $col_type = "";
+    $col_type_detail = array();
     foreach ($tableinfo["columns"] as $i => $col_info) {
       if ($d_k == $col_info["name"]) {
         $name_db = $col_info["name_db"];
         $col_type = $col_info["type"];
+        if (array_key_exists("type_detail", $col_info)) {
+          $col_type_detail = $col_info["type_detail"];
+        }
         break;
       }
     }
@@ -367,7 +371,7 @@ function api_insertdata($title, $data) {
     }
 
     try {
-      checkValueType($d_v, $col_type);
+      checkValueType($d_v, $col_type, $col_type_detail);
     } catch (Exception $e) {
       returnError($e->getMessage());
     }

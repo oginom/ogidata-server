@@ -19,7 +19,7 @@ $unittypes = array(
   "YEN"
 );
 
-function checkValueType($val, $type) {
+function checkValueType($val, $type, $type_detail) {
   if (gettype($type) != "string") {
     throw new Exception("value is not string");
   }
@@ -80,7 +80,22 @@ function checkValueType($val, $type) {
       if (filter_var($val, FILTER_VALIDATE_INT) === false) {
         throw new Exception("value ".$val." doesn't fit IMG");
       }
-      //TODO check image id
+      $img_info = getImageInfo($val);
+      if (array_key_exists("img_width", $type_detail)) {
+        if ($type_detail["img_width"] != $img_info["img_width"]) {
+          throw new Exception("img_width must fit ".$type_detail["img_width"]);
+        }
+      }
+      if (array_key_exists("img_height", $type_detail)) {
+        if ($type_detail["img_height"] != $img_info["img_height"]) {
+          throw new Exception("img_height must fit ".$type_detail["img_height"]);
+        }
+      }
+      if (array_key_exists("img_mimetype", $type_detail)) {
+        if ($type_detail["img_mimetype"] != $img_info["mime_type"]) {
+          throw new Exception("img_mimetype must be ".$type_detail["img_mimetype"]);
+        }
+      }
       break;
     default:
       throw new Exception("type '".$type."' not found");
@@ -439,7 +454,7 @@ function getImageInfo($img_id) {
     }
     $is_removed = $row[0][6];
     if (intval($is_removed)) {
-      returnError("already removed");
+      returnError("image already removed");
     }
     $ret = array(
       "img_id" => $row[0][0],
