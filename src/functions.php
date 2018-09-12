@@ -345,54 +345,68 @@ function api_insertdata($title, $data) {
     returnError("tableinfo file format error");
   }
 
-  $add_data = array();
-  foreach ($data as $d_k => $d_v) {
-    if (gettype($d_k) != "string") {
-      returnError("");
-    }
-    $name_db = "";
-    $col_type = "";
-    $col_type_detail = array();
-    foreach ($tableinfo["columns"] as $i => $col_info) {
-      if ($d_k == $col_info["name"]) {
-        $name_db = $col_info["name_db"];
-        $col_type = $col_info["type"];
-        if (array_key_exists("type_detail", $col_info)) {
-          $col_type_detail = $col_info["type_detail"];
-        }
-        break;
-      }
-    }
-    if ($name_db == "") {
-      returnError("column ".$d_k." not found");
-    }
-    if (array_key_exists($name_db, $add_data)) {
-      returnError("column ".$d_k." doubled");
-    }
-
-    try {
-      checkValueType($d_v, $col_type, $col_type_detail);
-    } catch (Exception $e) {
-      returnError($e->getMessage());
-    }
-
-    $d_v = (string) $d_v;
-    $add_data[$name_db] = $d_v;
+  try {
+    $add_data = formatData($tableinfo, $data);
+  } catch (Exception $e) {
+    returnError($e->getMessage());
   }
-
-  //TODO Required column check
 
   if (count($add_data) == 0) {
     returnError("no columns");
   }
 
-  insertData($table_id, $add_data);
+  try {
+    insertData($table_id, $add_data);
+  } catch (Exception $e) {
+    returnError($e->getMessage());
+  }
 
-  // if failed
+  //TODO if failed
 
   $ret = array(
     "result" => "success",
     "data" => $add_data
+  );
+  returnJSON($ret);
+}
+
+function api_updatedata($title, $data_id, $data) {
+
+  $table_id = getTableId($title);
+  if ($table_id < 0) {
+    returnError("table_id error");
+  }
+
+  $tableinfo_filename = __DIR__."/../tableinfo/table".$table_id.".json";
+
+  $tableinfo = file_get_contents($tableinfo_filename);
+  if ($tableinfo === false) {
+    returnError("tableinfo file not found");
+  }
+  $tableinfo = json_decode($tableinfo, true);
+  if ($tableinfo === false) {
+    returnError("tableinfo file format error");
+  }
+
+  try {
+    $change_data = formatData($tableinfo, $data, $is_insert=False);
+  } catch (Exception $e) {
+    returnError($e->getMessage());
+  }
+
+  if (count($change_data) == 0) {
+    returnError("no columns");
+  }
+
+  try {
+    updateData($table_id, $data_id, $change_data);
+  } catch (Exception $e) {
+    returnError($e->getMessage());
+  }
+
+  $ret = array(
+    "result" => "success",
+    "data" => $change_data
   );
   returnJSON($ret);
 }

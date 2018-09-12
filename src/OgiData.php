@@ -104,6 +104,45 @@ function checkValueType($val, $type, $type_detail) {
   return;
 }
 
+function formatData($tableinfo, $data, $is_insert=True) {
+  $ret_data = array();
+  foreach ($data as $d_k => $d_v) {
+    if (gettype($d_k) != "string") {
+      returnError("");
+    }
+    $name_db = "";
+    $col_type = "";
+    $col_type_detail = array();
+    foreach ($tableinfo["columns"] as $i => $col_info) {
+      if ($d_k == $col_info["name"]) {
+        $name_db = $col_info["name_db"];
+        $col_type = $col_info["type"];
+        if (array_key_exists("type_detail", $col_info)) {
+          $col_type_detail = $col_info["type_detail"];
+        }
+        break;
+      }
+    }
+    if ($name_db == "") {
+      throw new Exception("column ".$d_k." not found");
+    }
+    if (array_key_exists($name_db, $add_data)) {
+      throw new Exception("column ".$d_k." doubled");
+    }
+
+    checkValueType($d_v, $col_type, $col_type_detail);
+
+    $d_v = (string) $d_v;
+    $ret_data[$name_db] = $d_v;
+  }
+
+  if ($is_insert) {
+    //TODO Required column check
+  }
+
+  return $ret_data;
+}
+
 function registerTitle($title) {
   try {
     $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
@@ -251,35 +290,57 @@ function getTables() {
 
 function insertData($table_id, $add_data) {
   $tablename = "table".$table_id;
-  try {
-    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
-    $sql = "INSERT INTO ";
-    //$sql .= $conn->quote($tablename);
-    $sql .= $tablename;
-    $sql .= " (";
-    $sql_val = ") VALUES (";
-    foreach ($add_data as $k => $v) {
-      //$sql .= $conn->quote($k);
-      $sql .= $k;
-      $sql .= ",";
-      $sql_val .= $conn->quote($v);
-      //$sql_val .= $v;
-      $sql_val .= ",";
-    }
-    $sql = rtrim($sql, ",");
-    $sql_val = rtrim($sql_val, ",");
-    $sql .= $sql_val;
-    $sql .= ")";
+  $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+  $sql = "INSERT INTO ";
+  //$sql .= $conn->quote($tablename);
+  $sql .= $tablename;
+  $sql .= " (";
+  $sql_val = ") VALUES (";
+  foreach ($add_data as $k => $v) {
+    //$sql .= $conn->quote($k);
+    $sql .= $k;
+    $sql .= ",";
+    $sql_val .= $conn->quote($v);
+    //$sql_val .= $v;
+    $sql_val .= ",";
+  }
+  $sql = rtrim($sql, ",");
+  $sql_val = rtrim($sql_val, ",");
+  $sql .= $sql_val;
+  $sql .= ")";
 
-    $param = array();
-    $stmt = execute($conn,$sql,$param);
-    $dberr = $stmt->errorInfo();
-    if ($dberr[0] != "00000") {
-      //var_dump($stmt->errorInfo());
-      returnError("insert data error");
-    }
-  } catch (PDOException $e) {
-    returnError($e->getMessage());
+  $param = array();
+  $stmt = execute($conn,$sql,$param);
+  $dberr = $stmt->errorInfo();
+  if ($dberr[0] != "00000") {
+    //var_dump($stmt->errorInfo());
+    throw new Exception("insert data error");
+  }
+}
+
+function updateData($table_id, $data_id, $add_data) {
+  $tablename = "table".$table_id;
+  $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+  $sql = "UPDATE ";
+  //$sql .= $conn->quote($tablename);
+  $sql .= $tablename;
+  $sql .= " SET ";
+  foreach ($add_data as $k => $v) {
+    $sql .= $k;
+    $sql .= "=";
+    $sql .= $conn->quote($v);
+    $sql .= ",";
+  }
+  $sql = rtrim($sql, ",");
+  $sql .= " WHERE data_id=";
+  $sql .= $data_id;
+
+  $param = array();
+  $stmt = execute($conn,$sql,$param);
+  $dberr = $stmt->errorInfo();
+  if ($dberr[0] != "00000") {
+    //var_dump($stmt->errorInfo());
+    throw new Exception("update data error");
   }
 }
 
