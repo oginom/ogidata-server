@@ -8,6 +8,7 @@ $datatypes = array(
   "DOUBLE",
   "DECIMAL",
   "STRING",
+  "LONGTEXT",
   "CATEGORY",
   "TAGS",
   "TIMESTAMP",
@@ -40,6 +41,7 @@ function checkValueType($val, $type, $type_detail) {
       }
       break;
     case "STRING":
+    case "LONGTEXT":
     case "CATEGORY":
     case "TAGS":
       break;
