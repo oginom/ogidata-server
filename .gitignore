@@ -1,5 +1,7 @@
 
 /dbconfig.php
+*/__pycache__/*
+/migrations/*
 
 /tableinfo/*
 !/tableinfo/.gitkeep
