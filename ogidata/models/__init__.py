@@ -1,5 +1,7 @@
-from .models import User
+from .models import User, ImageInfo, TableTitle
 
 __all__ = [
-    User,
+  User,
+  ImageInfo,
+  TableTitle,
 ]
