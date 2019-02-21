@@ -533,4 +533,40 @@ function getImageInfo($img_id) {
   }
 }
 
+function exportData($table_id, $outfile) {
+  $tablename = "table".$table_id;
+  exportTable($tablename, $outfile);
+}
+
+function exportTable($tablename, $outfile) {
+  try {
+    $conn = getConnection(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
+    $sql = "SELECT * FROM ".$tablename;
+    //$sql .= " INTO OUTFILE ".$outfile;
+    //$sql .= " FIELDS TERMINATED BY ','";
+    //$sql .= " OPTIONALLY ENCLOSED BY '\"'";
+    $param = array();
+    $stmt = execute($conn,$sql,$param);
+    $dberr = $stmt->errorInfo();
+    if ($dberr[0] != "00000") {
+      returnError("error");
+    }
+    if(touch($outfile)){
+        $file = new SplFileObject($outfile, "w");
+        // write csv header
+        //$file->fputcsv($export_header);
+        // query database
+        //$stmt = $dbh->query($export_sql);
+        // create csv sentences
+        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+            $file->fputcsv($row);
+        }
+        // close database connection
+        //$dbh = null;
+    }
+  } catch (PDOException $e) {
+    returnError($e->getMessage());
+  }
+}
+
 ?>
