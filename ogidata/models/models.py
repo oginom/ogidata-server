@@ -74,8 +74,10 @@ class TableTitle(db.Model):
   title VARCHAR(255) UNIQUE NOT NULL
   '''
 
-  def __init__(self, title):
+  def __init__(self, title, table_id=None):
     self.title = title
+    if table_id:
+      self.table_id = table_id
 
   def to_dict(self):
     return dict(

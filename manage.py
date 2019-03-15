@@ -5,6 +5,7 @@
 
 from ogidata.app import app
 from ogidata.database import db
+import ogidata.functions
 
 '''
 if __name__ == '__main__':
@@ -24,5 +25,20 @@ manager.add_command('db', MigrateCommand)
 port = 8000
 manager.add_command("runserver", Server(host='0.0.0.0', port=port))
 
+@manager.command
+def cleardata():
+  if input('clear all data? (y/N):') == 'y':
+    ogidata.functions.clearData()
+
+@manager.command
+def importtables():
+  print('import tables')
+  ogidata.functions.importTables()
+
+@manager.command
+def importdata():
+  print('import data')
+  ogidata.functions.importData()
+
 if __name__ == '__main__':
-    manager.run()
+  manager.run()
