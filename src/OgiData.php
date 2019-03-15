@@ -552,15 +552,19 @@ function exportTable($tablename, $outfile) {
       returnError("error");
     }
     if(touch($outfile)){
-        $file = new SplFileObject($outfile, "w");
+        //$file = new SplFileObject($outfile, "w");
         // write csv header
         //$file->fputcsv($export_header);
         // query database
         //$stmt = $dbh->query($export_sql);
         // create csv sentences
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-            $file->fputcsv($row);
+        $fp = fopen($outfile, "w");
+        while($row = $stmt->fetch(PDO::FETCH_NUM)){
+            //$file->fputcsv($row);
+            fputs($fp, json_encode($row));
+            fputs($fp, "\n");
         }
+        fclose($fp);
         // close database connection
         //$dbh = null;
     }
