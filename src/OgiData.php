@@ -561,7 +561,7 @@ function exportTable($tablename, $outfile) {
         $fp = fopen($outfile, "w");
         while($row = $stmt->fetch(PDO::FETCH_NUM)){
             //$file->fputcsv($row);
-            fputs($fp, json_encode($row));
+            fputs($fp, json_encode($row, JSON_UNESCAPED_UNICODE));
             fputs($fp, "\n");
         }
         fclose($fp);
