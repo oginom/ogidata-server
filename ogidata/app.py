@@ -147,6 +147,13 @@ def api_deletedata():
     return errormessage('data_id not int')
   return functions.api_deletedata(title, data_id)
 
+@app.route("/ogidata/api/getchoice", methods=['GET'])
+def api_getchoice():
+  title = request.args.get('title')
+  limit = request.args.get('limit', default=10, type=int)
+  columns = request.args.get('columns', default=None)
+  return functions.api_getchoice(title, columns, limit)
+
 @app.route("/ogidata/api/uploadimage", methods=['POST'])
 def api_uploadimage():
   if 'file' not in request.files:

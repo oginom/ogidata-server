@@ -4,5 +4,5 @@
 
 /tableinfo/*
 !/tableinfo/.gitkeep
-/media/img/*
-!/media/img/.gitkeep
+/ogidata/static/img/*
+!/ogidata/static/img/.gitkeep
