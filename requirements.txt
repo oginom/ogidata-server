@@ -1,0 +1,7 @@
+Flask==0.12.2
+Flask-Cors==3.0.3
+Flask-Migrate==2.4.0
+Flask-Script==2.0.6
+Flask-SQLAlchemy==2.3.2
+PyMySQL==0.9.3
+pygooglechart==0.4.0

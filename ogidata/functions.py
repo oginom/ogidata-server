@@ -7,7 +7,7 @@ import os
 
 from flask import Flask, jsonify, request
 import flask.json
-from sqlalchemy import exc
+from sqlalchemy import distinct, exc
 from sqlalchemy.sql.expression import func
 
 from ogidata.database import db
@@ -185,7 +185,7 @@ def createtablemodel(tablename, cols_info):
   def to_list(self, cols_info=cols_info):
     ret = list()
     for i, col_info in enumerate(cols_info):
-      ret.append(getattr(self, col_info['name_db']))
+      ret.append(str(getattr(self, col_info['name_db'])))
     return ret
   attrs['to_list'] = to_list
   Model = type(tablename, (db.Model,), attrs)
@@ -312,7 +312,7 @@ def importData():
             d = ogidata.models.ImageInfo(img_id, img_filename,
               thumbnail_filename, img_ext, img_width, img_height)
             d.posted_at = datetime.strptime(sp[0], '%Y-%m-%d %H:%M:%S')
-            d.is_removed = sp[7]
+            d.is_removed = (sp[7] == '1')
             db.session.add(d)
         db.session.commit()
         continue
@@ -505,7 +505,7 @@ def api_getdata(title, start_index, limit, asc):
   except Exception as e:
     return errormessage(str(e))
   crit = table_model.created_at
-  if asc:
+  if not asc:
     crit = crit.desc()
   data = db.session.query(table_model).order_by(crit).offset(start_index).\
     limit(limit).all()
@@ -606,6 +606,26 @@ def api_deletedata(title, data_id):
   }
   return jsonify(ret), 200
 
+def api_getchoice(title, columns, limit):
+  try:
+    tableid = gettableid(title)
+    tablename = 'table' + str(tableid)
+    tableinfo = gettableinfo(tablename)
+    table_model = gettablemodel(tablename)
+  except Exception as e:
+    return errormessage(str(e))
+  choices = {}
+  for col in tableinfo['columns']:
+    colname = col['name']
+    name_db = col['name_db']
+    col_model = getattr(table_model, name_db)
+    max_data_id = func.max(table_model.data_id)
+    choice = db.session.query(col_model, max_data_id).\
+      group_by(col_model).order_by(max_data_id.desc()).limit(limit).all()
+    choice = [str(x[0]) for x in choice]
+    choices[colname] = choice
+  return jsonify(choices), 200
+
 def api_uploadimage(file):
   data = file.read()
   try:
@@ -624,10 +644,10 @@ def api_uploadimage(file):
   img_height = imginfo['img_height']
   img_ext = imginfo['img_ext']
   savefilename = os.path.dirname(os.path.abspath(__file__)) + \
-    '/../media/img/' + img_filename
+    '/static/img/' + img_filename
   thumbnail_filename = 'thm-' + str(img_id) + '.' + imginfo['img_ext']
   thumbnail_savefilename = os.path.dirname(os.path.abspath(__file__)) + \
-    '/../media/img/' + thumbnail_filename
+    '/static/img/' + thumbnail_filename
 
   d = ogidata.models.ImageInfo(img_id, img_filename,
     thumbnail_filename, img_ext, img_width, img_height)
@@ -678,9 +698,9 @@ def api_removeimage(img_id):
   if d.is_removed:
     return errormessage('already removed')
   rm_filename = os.path.dirname(os.path.abspath(__file__)) + \
-    '/../media/img/' + d.img_filename
+    '/static/img/' + d.img_filename
   rm_thm_filename = os.path.dirname(os.path.abspath(__file__)) + \
-    '/../media/img/' + d.thumbnail_filename
+    '/static/img/' + d.thumbnail_filename
 
   d.is_removed = True
   try:

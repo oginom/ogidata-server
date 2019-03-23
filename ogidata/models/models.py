@@ -24,9 +24,9 @@ class ImageInfo(db.Model):
 
   posted_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
   img_id = db.Column(db.Integer, nullable=False, primary_key=True)
-  img_ext = db.Column(db.String(length=255), nullable=False)
-  img_filename = db.Column(db.String(length=255), unique=True, nullable=False)
-  thumbnail_filename = db.Column(db.String(length=255), unique=True, nullable=False)
+  img_ext = db.Column(db.String(length=64), nullable=False)
+  img_filename = db.Column(db.String(length=64), unique=True, nullable=False)
+  thumbnail_filename = db.Column(db.String(length=64), unique=True, nullable=False)
   img_width = db.Column(db.Integer)
   img_height = db.Column(db.Integer)
   is_removed = db.Column(db.Boolean, nullable=False, default=False)
@@ -67,7 +67,7 @@ class TableTitle(db.Model):
   created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
   table_id = db.Column(db.Integer, autoincrement=True, nullable=False,
     primary_key=True)
-  title = db.Column(db.String(length=255), unique=True, nullable=False)
+  title = db.Column(db.String(length=64), unique=True, nullable=False)
   '''
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   table_id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
