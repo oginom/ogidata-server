@@ -2,6 +2,7 @@
 # coding:utf-8
 
 from datetime import datetime, date
+from importlib import import_module
 import json
 import os
 
@@ -214,8 +215,10 @@ def getnextimageid():
 
 def getTables():
   try:
-    tables = db.session.query(ogidata.models.TableTitle.title,
-      ogidata.models.TableTitle.table_id).all()
+    tables = db.session.query(
+      ogidata.models.TableTitle.title,
+      ogidata.models.TableTitle.table_id).\
+      order_by(ogidata.models.TableTitle.updated_at).all()
   except exc.SQLAlchemyError:
     raise ValueError('get tables sql error')
   except Exception as e:
@@ -248,6 +251,14 @@ def dropTable(tableid):
   tableinfo_filename = os.path.dirname(os.path.abspath(__file__)) + \
     '/../tableinfo/' + tablename + '.json'
   os.remove(tableinfo_filename)
+
+def setTableUpdated(tableid):
+  try:
+    table = db.session.query(ogidata.models.TableTitle).\
+      filter(ogidata.models.TableTitle.table_id==tableid).one()
+    table.updated_at = datetime.now()
+  except Exception as e:
+    print(e)
 
 def clearData():
   try:
@@ -473,6 +484,7 @@ def api_insertdata(title, data):
   #return errormessage(str(d.col1)+' '+str(d.col2))
 
   db.session.add(d)
+  setTableUpdated(tableid)
   try:
     db.session.commit()
   except exc.SQLAlchemyError as e:
@@ -729,4 +741,24 @@ def api_getimageinfo(img_id):
   if d.is_removed:
     return errormessage('already removed')
   return jsonify(d.as_dict()), 200
+
+def api_getchart(title):
+  try:
+    tableid = gettableid(title)
+    tablename = 'table' + str(tableid)
+    tableinfo = gettableinfo(tablename)
+    table_model = gettablemodel(tablename)
+  except Exception as e:
+    return errormessage(str(e))
+  chart_mod_name = 'chart.chart'+str(tableid)
+  chart_mod_filename = os.path.dirname(os.path.abspath(__file__)) + \
+    '/../chart/chart' + str(tableid) + '.py'
+  if os.path.exists(chart_mod_filename):
+    chart_mod = import_module(chart_mod_name)
+    odc = chart_mod.OgiDataChart(table_model, tableinfo, db)
+    url = odc.geturl()
+  else:
+    url = None
+  ret = {'url' : url, 'tableid':tableid}
+  return jsonify(ret), 200
 

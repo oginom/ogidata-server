@@ -192,3 +192,8 @@ def api_getimageinfo():
     return errormessage('img_id not int')
   return functions.api_getimageinfo(img_id)
 
+@app.route("/ogidata/api/getchart", methods=['GET'])
+def api_getchart():
+  title = request.args.get('title')
+  return functions.api_getchart(title)
+
