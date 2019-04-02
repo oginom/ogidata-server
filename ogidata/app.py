@@ -11,7 +11,7 @@ import ogidata.functions as functions
 from ogidata.util import *
 
 from flask.json import JSONEncoder
-from datetime import datetime
+from datetime import datetime, date
 import os
 
 #IMG max 2MB
@@ -21,6 +21,8 @@ class MyJSONEncoder(JSONEncoder):
   def default(self, o):
     if isinstance(o, datetime):
       return o.strftime("%Y-%m-%d %H:%M:%S")
+    elif isinstance(o, date):
+      return o.strftime("%Y-%m-%d")
     return super().default(o)
 
 def create_app():
