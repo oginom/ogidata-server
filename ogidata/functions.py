@@ -213,17 +213,20 @@ def getnextimageid():
     return 1
   return imgids[0][0] + 1
 
-def getTables():
+def getTables(as_list=False):
   try:
     tables = db.session.query(
       ogidata.models.TableTitle.title,
       ogidata.models.TableTitle.table_id).\
-      order_by(ogidata.models.TableTitle.updated_at).all()
+      order_by(ogidata.models.TableTitle.updated_at.desc()).all()
   except exc.SQLAlchemyError:
     raise ValueError('get tables sql error')
   except Exception as e:
     raise ValueError('get tables error')
-  d = {k: v for (k, v) in tables}
+  if as_list:
+    d = [[k, v] for (k, v) in tables]
+  else:
+    d = {k: v for (k, v) in tables}
   return d
 
 def dropTable(tableid):
@@ -413,9 +416,9 @@ def api_createtable(title, cols):
 
   return jsonify(d.to_dict()), 201
 
-def api_gettables():
+def api_gettables(as_list=True):
   try:
-    d = getTables()
+    d = getTables(as_list=as_list)
   except Exception as e:
     return errormessage(str(e))
   return jsonify(d), 200
