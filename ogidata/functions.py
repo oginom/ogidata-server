@@ -759,9 +759,9 @@ def api_getchart(title):
   if os.path.exists(chart_mod_filename):
     chart_mod = import_module(chart_mod_name)
     odc = chart_mod.OgiDataChart(table_model, tableinfo, db)
-    url = odc.geturl()
+    urls = odc.geturls()
   else:
-    url = None
-  ret = {'url' : url, 'tableid':tableid}
+    urls = []
+  ret = {'urls' : urls, 'tableid':tableid}
   return jsonify(ret), 200
 
