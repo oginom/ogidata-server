@@ -4,5 +4,13 @@
 
 /tableinfo/*
 !/tableinfo/.gitkeep
+/chart/*
+!/chart/.gitkeep
 /ogidata/static/img/*
 !/ogidata/static/img/.gitkeep
+/media/img/*
+!/media/img/.gitkeep
+
+/instance/*
+!/instance/config.py.sample
+/data_imp/*

@@ -10,11 +10,7 @@ class DevelopmentConfig:
   DEBUG = True
 
   # SQLAlchemy
-  SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{user}:{password}@{host}/ogidatadb?charset=utf8'.format(**{
-    'user': 'root',
-    'password': '',
-    'host': 'localhost',
-  })
+  # SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://UUU:PPP@HHH/DDD?charset=utf8mb4' # in instance
   SQLALCHEMY_TRACK_MODIFICATIONS = False
   SQLALCHEMY_ECHO = False
 
