@@ -65,6 +65,7 @@ class TableTitle(db.Model):
   __tablename__ = 'table_title'
 
   created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
+  updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
   table_id = db.Column(db.Integer, autoincrement=True, nullable=False,
     primary_key=True)
   title = db.Column(db.String(length=64), unique=True, nullable=False)

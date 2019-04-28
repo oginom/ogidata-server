@@ -11,7 +11,7 @@ import ogidata.functions as functions
 from ogidata.util import *
 
 from flask.json import JSONEncoder
-from datetime import datetime
+from datetime import datetime, date
 import os
 
 #IMG max 2MB
@@ -21,11 +21,15 @@ class MyJSONEncoder(JSONEncoder):
   def default(self, o):
     if isinstance(o, datetime):
       return o.strftime("%Y-%m-%d %H:%M:%S")
+    elif isinstance(o, date):
+      return o.strftime("%Y-%m-%d")
     return super().default(o)
 
 def create_app():
-  app = Flask(__name__)
+  app = Flask(__name__, instance_relative_config=True)
   app.config.from_object('ogidata.config.Config')
+  app.config.from_pyfile('config.py', silent=False)
+
   app.json_encoder = MyJSONEncoder
 
   init_db(app)
@@ -33,31 +37,6 @@ def create_app():
   return app
 
 app = create_app()
-
-'''
-@app.route("/ogidata/api/v1/model/<id>", methods=['DELETE'])
-def api_v1_model_id(id):
-  if request.method == 'DELETE':
-    d = ogidata.models.User.query.get(id)
-    db.session.delete(d)
-    db.session.commit()
-    return '', 204
-'''
-
-@app.route("/ogidata/api/v1/tables", methods=['GET', 'POST'])
-def api_v1_models():
-  '''
-  if request.method == 'POST':
-    name = request.json['name']
-    d = ogidata.models.User(name)
-    db.session.add(d)
-    db.session.commit()
-    return jsonify(d.to_dict()), 201
-  '''
-  if request.method == 'GET':
-    ls = ogidata.models.TableTitle.query.all()
-    ls = [l.to_dict() for l in ls]
-    return jsonify(ls), 200
 
 @app.route("/ogidata/api/createtable", methods=['POST'])
 def api_createtable():
@@ -191,4 +170,9 @@ def api_getimageinfo():
   except:
     return errormessage('img_id not int')
   return functions.api_getimageinfo(img_id)
+
+@app.route("/ogidata/api/getchart", methods=['GET'])
+def api_getchart():
+  title = request.args.get('title')
+  return functions.api_getchart(title)
 
