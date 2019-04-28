@@ -1,11 +1,11 @@
 
-### Requirements
+### Setup
 
-*SQVAlchemy version*
+> cp instance/config.py.sample instance/config.py
+> vi instance/config.py
+> python manage.py migrate
 
-pip install sqlalchemy==1.1.15
-
-### Use
+### Run
 
 > python manage.py runserver
 
