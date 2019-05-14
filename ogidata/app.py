@@ -38,6 +38,11 @@ def create_app():
 
 app = create_app()
 
+@app.route("/robots.txt", methods=['GET'])
+def robots():
+  msg = 'User-agent:*\nDisallow:/'
+  return msg, 400, {'Content-Type': 'text/plain'}
+
 @app.route("/ogidata/api/createtable", methods=['POST'])
 def api_createtable():
   try:
