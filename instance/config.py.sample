@@ -4,3 +4,7 @@ DEV_DB_PASSWORD = 'mypass'
 DEV_DB_HOST = 'localhost'
 
 SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}/{}?charset=utf8mb4'.format(DEV_DB_USER, DEV_DB_PASSWORD, DEV_DB_HOST, DEV_DB_NAME)
+
+
+SSL_CERT = '/path/to/cert.pem'
+SSL_PRIVKEY = '/path/to/privkey.pem'
