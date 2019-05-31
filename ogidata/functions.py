@@ -361,6 +361,36 @@ def importData():
       print(str(e))
       db.session.rollback()
 
+def exportData():
+  exp_dir = os.path.dirname(os.path.abspath(__file__)) + \
+    '/../data_exp/'
+  try:
+    print('export data')
+    d = getTables()
+    for title, table_id in d.items():
+      print('export table "' + title + '"')
+      outfile = '%stable%d.csv' % (exp_dir, table_id)
+      try:
+        exportTable(table_id, outfile)
+      except Exception as e:
+        print(e)
+  except Exception as e:
+    print(e)
+
+def exportTable(tableid, filename):
+  tablename = 'table' + str(tableid)
+  table_model = gettablemodel(tablename)
+  crit = table_model.created_at
+  #if not asc:
+  #  crit = crit.desc()
+  data = db.session.query(table_model).order_by(crit).offset(start_index).\
+    limit(limit).all()
+  with open(filename, 'w') as f:
+    writer = csv.writer(f)
+    for line in data:
+      writer.writerow(line.to_list())
+  return
+
 ########## API no kabe ##########
 
 def api_createtable(title, cols):
