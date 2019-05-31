@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
+import csv
 from datetime import datetime, date
 from importlib import import_module
 import json
@@ -154,12 +155,12 @@ def settableinfo(tablename, tableinfo):
 def createtablemodel(tablename, cols_info):
   attrs = {
     '__tablename__' : tablename,
+    'data_id' : db.Column(db.Integer, nullable=False, autoincrement=True,
+                          primary_key=True),
     'created_at' : db.Column(db.DateTime, nullable=False,
                              default=datetime.now),
     'updated_at' : db.Column(db.DateTime, nullable=False,
                              default=datetime.now, onupdate=datetime.now),
-    'data_id' : db.Column(db.Integer, nullable=False, autoincrement=True,
-                          primary_key=True)
   }
   for i, col_info in enumerate(cols_info):
     type_db = col_info['type']
@@ -183,8 +184,12 @@ def createtablemodel(tablename, cols_info):
       ret[col_info['name']] = getattr(self, col_info['name_db'])
     return ret
   attrs['to_dict'] = to_dict
-  def to_list(self, cols_info=cols_info):
+  def to_list(self, cols_info=cols_info, detail=False):
     ret = list()
+    if detail:
+      ret.append(str(getattr(self, 'data_id')))
+      ret.append(str(getattr(self, 'created_at')))
+      ret.append(str(getattr(self, 'updated_at')))
     for i, col_info in enumerate(cols_info):
       ret.append(str(getattr(self, col_info['name_db'])))
     return ret
@@ -361,6 +366,39 @@ def importData():
       print(str(e))
       db.session.rollback()
 
+def exportData():
+  exp_dir = os.path.dirname(os.path.abspath(__file__)) + '/../data_exp'
+  try:
+    d = getTables()
+    for title, table_id in d.items():
+      outfile = '%s/table%d.csv' % (exp_dir, table_id)
+      try:
+        exportTable(table_id, outfile)
+      except Exception as e:
+        print(e)
+      print('exported table%d "%s"' % (table_id, title))
+    exportTableModel(ogidata.models.ImageInfo,
+      ogidata.models.ImageInfo.img_id, '%s/img_info.csv' % exp_dir)
+    print('exported img_info');
+    exportTableModel(ogidata.models.TableTitle,
+      ogidata.models.TableTitle.table_id, '%s/table_title.csv' % exp_dir)
+    print('exported table_title');
+  except Exception as e:
+    print(e)
+
+def exportTable(tableid, filename):
+  tablename = 'table' + str(tableid)
+  table_model = gettablemodel(tablename)
+  crit = table_model.data_id
+  exportTableModel(table_model, crit, filename)
+
+def exportTableModel(table_model, crit, filename):
+  data = db.session.query(table_model).order_by(crit).all()
+  with open(filename, 'w') as f:
+    writer = csv.writer(f)
+    for line in data:
+      writer.writerow(line.to_list(detail=True))
+
 ########## API no kabe ##########
 
 def api_createtable(title, cols):
@@ -483,7 +521,7 @@ def api_insertdata(title, data):
 
   if len(add_cols) == 0:
     return errormessage('no columns')
-  
+
   #return errormessage(str(d.col1)+' '+str(d.col2))
 
   db.session.add(d)

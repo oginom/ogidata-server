@@ -43,5 +43,10 @@ def importdata():
   print('import data')
   ogidata.functions.importData()
 
+@manager.command
+def exportdata():
+  print('export data')
+  ogidata.functions.exportData()
+
 if __name__ == '__main__':
   manager.run()

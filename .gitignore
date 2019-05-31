@@ -14,3 +14,5 @@
 /instance/*
 !/instance/config.py.sample
 /data_imp/*
+/data_exp/*
+!/data_exp/.gitkeep

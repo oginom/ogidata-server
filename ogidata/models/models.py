@@ -22,8 +22,8 @@ class User(db.Model):
 class ImageInfo(db.Model):
   __tablename__ = 'img_info'
 
-  posted_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
   img_id = db.Column(db.Integer, nullable=False, primary_key=True)
+  posted_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
   img_ext = db.Column(db.String(length=64), nullable=False)
   img_filename = db.Column(db.String(length=64), unique=True, nullable=False)
   thumbnail_filename = db.Column(db.String(length=64), unique=True, nullable=False)
@@ -61,13 +61,24 @@ class ImageInfo(db.Model):
       'img_height':self.img_height,
     }
 
+  def to_list(self, detail=False):
+    return [
+      self.img_id,
+      self.posted_at,
+      self.img_ext,
+      self.img_filename,
+      self.thumbnail_filename,
+      self.img_width,
+      self.img_height,
+    ]
+
 class TableTitle(db.Model):
   __tablename__ = 'table_title'
 
-  created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
-  updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
   table_id = db.Column(db.Integer, autoincrement=True, nullable=False,
     primary_key=True)
+  created_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
+  updated_at = db.Column(db.DateTime, nullable=False, default=datetime.now, onupdate=datetime.now)
   title = db.Column(db.String(length=64), unique=True, nullable=False)
   '''
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -85,4 +96,12 @@ class TableTitle(db.Model):
       table_id=self.table_id,
       title=self.title
     )
+
+  def to_list(self, detail=False):
+    return [
+      self.table_id,
+      self.created_at,
+      self.updated_at,
+      self.title,
+    ]
 
