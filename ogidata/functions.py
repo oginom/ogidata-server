@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
+import csv
 from datetime import datetime, date
 from importlib import import_module
 import json
@@ -183,8 +184,12 @@ def createtablemodel(tablename, cols_info):
       ret[col_info['name']] = getattr(self, col_info['name_db'])
     return ret
   attrs['to_dict'] = to_dict
-  def to_list(self, cols_info=cols_info):
+  def to_list(self, cols_info=cols_info, detail=False):
     ret = list()
+    if detail:
+      ret.append(str(getattr(self, 'created_at')))
+      ret.append(str(getattr(self, 'updated_at')))
+      ret.append(str(getattr(self, 'data_id')))
     for i, col_info in enumerate(cols_info):
       ret.append(str(getattr(self, col_info['name_db'])))
     return ret
@@ -362,8 +367,7 @@ def importData():
       db.session.rollback()
 
 def exportData():
-  exp_dir = os.path.dirname(os.path.abspath(__file__)) + \
-    '/../data_exp/'
+  exp_dir = os.path.dirname(os.path.abspath(__file__)) + '/../data_exp/'
   try:
     print('export data')
     d = getTables()
@@ -383,12 +387,11 @@ def exportTable(tableid, filename):
   crit = table_model.created_at
   #if not asc:
   #  crit = crit.desc()
-  data = db.session.query(table_model).order_by(crit).offset(start_index).\
-    limit(limit).all()
+  data = db.session.query(table_model).order_by(crit).all()
   with open(filename, 'w') as f:
     writer = csv.writer(f)
     for line in data:
-      writer.writerow(line.to_list())
+      writer.writerow(line.to_list(detail=True))
   return
 
 ########## API no kabe ##########
