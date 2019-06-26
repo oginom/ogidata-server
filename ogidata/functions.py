@@ -562,7 +562,7 @@ def api_getdata(title, start_index, limit, asc):
     crit = crit.desc()
   data = db.session.query(table_model).order_by(crit).offset(start_index).\
     limit(limit).all()
-  data_list = [line.to_list() for line in data]
+  data_list = [line.to_list(detail=True) for line in data]
   return jsonify(data_list)
 
 def api_updatedata(title, data_id, data):
