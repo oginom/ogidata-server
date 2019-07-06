@@ -6,6 +6,7 @@
 !/tableinfo/.gitkeep
 /chart/*
 !/chart/.gitkeep
+!/chart/chart_sample.py
 /ogidata/static/img/*
 !/ogidata/static/img/.gitkeep
 /media/img/*
