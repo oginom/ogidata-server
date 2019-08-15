@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 # coding:utf-8
 
-##### ogidata/app.py
-"""flask appの初期化を行い、flask appオブジェクトの実体を持つ"""
-from flask import Flask, json, jsonify, request
+import os
+from datetime import datetime, date
+
+from flask import Flask, json, jsonify, request, send_from_directory
+from flask.json import JSONEncoder
 
 from ogidata.database import init_db
 import ogidata.models
 import ogidata.functions as functions
 from ogidata.util import *
-
-from flask.json import JSONEncoder
-from datetime import datetime, date
-import os
 
 #IMG max 2MB
 IMG_SIZE_MAX = 2000000
@@ -40,8 +38,7 @@ app = create_app()
 
 @app.route("/robots.txt", methods=['GET'])
 def robots():
-  msg = 'User-agent:*\nDisallow:/'
-  return msg, 400, {'Content-Type': 'text/plain'}
+  return send_from_directory('staticpage', 'robots.txt')
 
 @app.route("/ogidata/api/createtable", methods=['POST'])
 def api_createtable():

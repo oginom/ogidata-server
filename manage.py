@@ -26,7 +26,7 @@ host = '0.0.0.0'
 port = 443
 ssl_crt = app.config['SSL_CERT']
 ssl_key = app.config['SSL_PRIVKEY']
-manager.add_command("runserver", Server(host=host, port=port, ssl_crt=ssl_crt, ssl_key=ssl_key))
+manager.add_command("runserver", Server(host=host, port=port, ssl_crt=ssl_crt, ssl_key=ssl_key, threaded=True))
 
 @manager.command
 def cleardata():
